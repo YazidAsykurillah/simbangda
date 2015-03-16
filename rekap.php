@@ -72,18 +72,35 @@
 
 	$rowAnggaran = $dpl->fetch_assoc();
 	$totalAnggaran =$rowAnggaran['totalAnggaran'];
+	$totalAnggaranTampil =str_replace(".", ",", $totalAnggaran/1000000000000);			// Tampilkan pagu dalam orde Triliyun
 
 
-	$serapan = round(array_sum($sumTotalFisik)/$totalAnggaran*100,2);
-	$sisaSerapan = 100 - $serapan;
+	$fisik = round(array_sum($sumTotalFisik)/$totalAnggaran*100,2);
+	$sisaFisik = 100 - $fisik;
 
 	//Blok SPJ
-	$spjPertahun = array_sum($sumTotalSpj);
+	$spjPertahun = array_sum($sumTotalSpj);				
+	$spjPertahunTampil = str_replace(".", ",", $spjPertahun/1000000000000);		//Tampilkan spj dalam orde triliyun
 	$realisasiKeuangan = ($spjPertahun/$totalAnggaran)*100;
 	$sisaRealisasiKeuangan = 100-$realisasiKeuangan;
 
 	//END Block SPJ
 
+?>
+
+<?php 	
+		//Blok option tahun.
+		//Utk menampilkan pilihan tahun.
+
+		$optionTahun = '';
+		$sqlTahun = "SELECT DISTINCT ta FROM kegiatan WHERE ta !='NULL' ORDER BY ta DESC";
+		$resTahun = $db->query($sqlTahun);
+		while($rowTahun = $resTahun->fetch_object()){
+
+			$optionTahun.='<option value='.$rowTahun->ta.'>'.$rowTahun->ta.'</option>';
+		}
+
+		//END Block Option tahun.
 ?>
 
 <!DOCTYPE html>
@@ -102,6 +119,7 @@
 	    <link href="css/bootstrap.css" rel="stylesheet" type="text/css" />
 	    <link href="css/style.css" rel="stylesheet" type="text/css" />
 	    <link href="css/dataTables.css" rel="stylesheet" type="text/css" />
+	    <link href="css/dataTables.responsive.css" rel="stylesheet" type="text/css" />
 	    <style type="text/css">
 	    	
 	    	.tree{
@@ -139,22 +157,27 @@
 						<div class="form-group">
 							<label for="tahun">Tahun</label>
 							<select name="tahun" class="form-control" id="tahun">
-								<option value="">--Pilih Tahun--</option>
-								<option value="2015">2015</option>
-								<option value="2014">2014</option>
-								<option value="2013">2013</option>
-								<option value="2012">2011</option>
-								<option value="2011">2012</option>
-								<option value="2010">2010</option>
-								<option value="2009">2009</option>
-								<option value="2008">2008</option>
-								<option value="2007">2007</option>
+								<?php
+									//Blok menampilkan opsi tahun yang terseleksi.
+									$selectedOption = '';
+									if(isset($_GET['tahun']) && $_GET['tahun']!=""){					//Ada tahun yang terseleksi, tetapkan pilihan tahun sesuai tahunyang dipilih.
+										$selectedOption.= '<option value='.$_GET['tahun'].'>'.$_GET['tahun'].'</option>';
+									}
+									else{					//Tidak ada tahun yang dipilih, tampilkan opsi pilih tahun.
+
+										$selectedOption.='<option value="">--Pilih Tahun--</option>';
+									}
+									echo $selectedOption;
+								?>
+								
+								<?php echo $optionTahun; ?>
+								
 							</select>
 							<!-- <input type="text" name="tahun" id="tahun" class="form-control input-sm"> -->
 						</div>
 						<div class="form-group">
 						    <label for=""><p></p></label>
-						    <button class="btn btn-primary form-control" type="submit">
+						    <button class="btn btn-sm btn-primary form-control" type="submit">
 						    	<i class="glyphicon glyphicon-play"></i>&nbsp;Lihat
 						    </button>
 						</div> 
@@ -167,12 +190,14 @@
 				<div class="row">
 				
 					<div class="col-sm-3">
-						<h3><strong>Pagu : <?php echo substr(number_format($totalAnggaran),0,4) ." T"; ?></strong></h3>
+						<h3>
+							<strong>Pagu : <?php echo substr($totalAnggaranTampil,0,4); ?> T</strong>
+						</h3>
 					</div>
 					<div class="col-sm-3">
 						<h3>
 							<strong>
-								SPJ (Rp) : <?php echo substr(number_format($spjPertahun),0,4)." T" ;?>
+								SPJ : <?php echo substr($spjPertahunTampil,0,4) ;?> T
 							</strong>
 						</h3>
 					</div>
@@ -187,7 +212,7 @@
 					<div class="col-sm-3">
 						<h3>
 							<strong>
-							Fisik : <?php echo $serapan." %"; ?>
+							Fisik : <?php echo $fisik." %"; ?>
 							</strong>
 						</h3>
 					</div>
@@ -238,7 +263,7 @@
 			            	
 			            	<center id="loadingImage">
 			            		<img src="images/loadingsnake.GIF">
-			            		<p class="alert alert -info">Mohon tunggu...</p>
+			            		<p class="alert alert-info">Mohon tunggu, sedang mengumpulkan data kegiatan...</p>
 			            	</center>
 
 				        </div>
@@ -263,6 +288,7 @@
 	    <script src="js/highcharts.js"></script>
 	    <script src="js/highcharts-3d.js"></script>
 	    <script src="js/dataTables.js"></script>
+	    <script src="js/dataTables.responsive.js"></script>
 
 
 	   
@@ -386,8 +412,8 @@
 			            type: 'pie',
 			            name: 'Realisasi Fisik',
 			            data: [
-			                ['Penggunaan', <?php echo $serapan; ?>],
-		                    ['Sisa', <?php echo $sisaSerapan; ?>]
+			                ['Penggunaan', <?php echo $fisik; ?>],
+		                    ['Sisa', <?php echo $sisaFisik; ?>]
 			            ]
 			        }]
 			    });
@@ -467,7 +493,9 @@
 	    				$('#tblInstansi_'+id_instansi).append(response);
 	    				$('#detailViewer_'+id_instansi).remove();
 	    				$('#substituent_'+id_instansi).show();
-	    				$('#tblInstansi_'+id_instansi).dataTable();
+	    				$('#tblInstansi_'+id_instansi).dataTable({
+	    					responsive:true
+	    				});
 	    				$('#loadingImage').hide();
 	    			}
 	    		});
