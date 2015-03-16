@@ -62,20 +62,20 @@ include"connect.php";
                             <li>
 
                                 <a onClick="getDetail('.$idInstansi.')" id="detailViewer_'.$idInstansi.'">'.$namaInstansi.'
-                                    (Pagu : '.round($pagu,2).' M )
+                                    (Pagu : '.str_replace('.', ',', round($pagu,2)).' M)
                                 </a>
                                 <a id="substituent_'.$idInstansi.'" style="display:none;">'.$namaInstansi.'
-                                    (Pagu : '.round($pagu,2).' M )
+                                    (Pagu : '.str_replace('.', ',', round($pagu,2)).' M)
                                 </a>
                                 <ul>
-                                    <table class="table table-striped table-responsive" id="tblInstansi_'.$idInstansi.'">
+                                    <table class="table table-striped" style="width:100%;" id="tblInstansi_'.$idInstansi.'">
                                         <thead>
                                             <tr>
                                                 <th style="width:50%">Kegiatan</th>
-                                                <th style="text-align:center;">Pagu (M)</th>
-                                                <th style="text-align:center;">SPJ (M)</th>
-                                                <th style="text-align:center;">% Keuangan</th>
-                                                <th style="text-align:center;">% Fisik</th>
+                                                <th style="text-align:right;">Pagu</th>
+                                                <th style="text-align:right;">SPJ</th>
+                                                <th style="text-align:right;">% Keuangan</th>
+                                                <th style="text-align:right;">% Fisik</th>
                                             </tr>
                                         </thead>
                                         

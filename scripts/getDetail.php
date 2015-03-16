@@ -65,10 +65,10 @@ include"connect.php";
 
                 $detailInstansi.='<tr>
                                     <td>'.$rowKegiatan->nama_kegiatan.'</td>
-                                    <td style="text-align:center;">'.substr($jumlahAnggaranTampil,0,5).'</td>
-                                    <td style="text-align:center;">'.substr($totalSpjTampil,0,5).'</td>
-                                    <td style="text-align:center;">'.substr($prosentaseSpjPerkegiatan,0,4).'</td>
-                                    <td style="text-align:center;">'.substr($prosentasePerKegiatan,0,4).'</td> 
+                                    <td style="text-align:right;">'.number_format($jumlahAnggaran).'</td>
+                                    <td style="text-align:right;">'.number_format($totalSpj).'</td>
+                                    <td style="text-align:right;">'.substr($prosentaseSpjPerkegiatan,0,4).'</td>
+                                    <td style="text-align:right;">'.substr($prosentasePerKegiatan,0,4).'</td> 
                                   </tr>';
             }
         }
